@@ -29,12 +29,11 @@ pipeline {
             when {
                 branch 'master'
             }
-            steps {
-                script {
-                    docker.withRegistry('https://docker.io', 'dockerhublogin')  {
-                        app.push("${env.BUILD_NUMBER}")
-                        app.push("latest")
-                    }
+		steps {
+      	withCredentials([usernamePassword(credentialsId: 'dockerhublogin', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+        	sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+          sh 'docker push stallonejoel/train-schedule:latest'
+        }
                 }
             }
         }
