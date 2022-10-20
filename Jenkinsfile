@@ -25,18 +25,7 @@ pipeline {
                 }
             }
         }
-        stage('Push Docker Image') {
-            when {
-                branch 'master'
-            }
-		steps {
-      	withCredentials([usernamePassword(credentialsId: 'dockerhublogin', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-        	sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-          sh 'docker push stallonejoel/train-schedule:latest'
-        }
-                }
-            }
-        }
+        
         stage('DeployToProduction') {
             when {
                 branch 'master'
