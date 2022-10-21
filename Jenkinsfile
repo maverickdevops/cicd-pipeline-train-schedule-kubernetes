@@ -26,25 +26,21 @@ pipeline {
             }
         }
         
-        stage('DeployToProduction') {
-            when {
-                branch 'master'
-            }
-		steps{
-			input 'Deploy to Production?'
-			milestone(1)
-			sshagent([‘kubeconfig’]){
-				sh ‘scp -r -o StrictHostKeyChecking=no train-schedule-kube.yml cloud_user@13.54.189.89’
-			}
-					script{
-						try{
-							sh ‘ssh cloud_user@13.54.189.89 kubectl apply -f train-schedule-kube.yml’
-						}catch(error){
-						}
-					}
-				}
-			}
-
+      stage ('DeployToProduction') {
+    when {
+        branch 'master'
+    }
+    steps {
+        input 'Deploy to Production'
+        milestone(1)
+        withCredentials ([usernamePassword(credentialsId: 'kubemasterlogin', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
+            script {
+                sh "scp -r -o StrictHostKeyChecking=no train-schedule-kube.yml $USERNAME@${env.productionserver}:/home/cloud_user"
+                try {
+			sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@${env.productionserver} kubectl apply -f /home/cloud_user/train-schedule-kube.yml"
+                } catch (err) {
+                    echo: 'caught error: $err'
+                }
             }
         }
     }
