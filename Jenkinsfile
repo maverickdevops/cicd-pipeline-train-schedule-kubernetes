@@ -30,14 +30,24 @@ pipeline {
             when {
                 branch 'master'
             }
-            steps {
-                input 'Deploy to Production?'
-                milestone(1)
-		kubernetesDeploy(
-			kubeconfig: 'kubeconfig',
-			configs: 'train-schedule-kube.yml',
-			enableConfigSubstitution: true			
-			)
+            stage(‘Deploy to K8s’)
+		{
+		steps{
+			input 'Deploy to Production?'
+			milestone(1)
+			sshagent([‘kubeconfig’]){
+				sh ‘scp -r -o StrictHostKeyChecking=no train-schedule-kube.yml cloud_user@13.54.189.89’
+					script{
+						try{
+							sh ‘ssh cloud_user@13.54.189.89 kubectl apply -f train-schedule-kube.yml’
+						}catch(error){
+						}
+					}
+				}
+			}
+		}
+	}
+
             }
         }
     }
