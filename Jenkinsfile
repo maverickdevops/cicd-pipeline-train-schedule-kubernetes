@@ -33,7 +33,7 @@ pipeline {
     steps {
         input 'Deploy to Production'
         milestone(1)
-        withCredentials ([usernamePassword(credentialsId: 'kubemasterlogin', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
+        withCredentials ([usernamePassword(credentialsId: 'kubemaster', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
             script {
                 sh "scp -r -o StrictHostKeyChecking=no train-schedule-kube.yml $USERNAME@${env.productionserver}:/home/cloud_user"
                 try {
