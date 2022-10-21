@@ -30,8 +30,6 @@ pipeline {
             when {
                 branch 'master'
             }
-            stage(‘Deploy to K8s’)
-		{
 		steps{
 			input 'Deploy to Production?'
 			milestone(1)
@@ -45,8 +43,6 @@ pipeline {
 					}
 				}
 			}
-		}
-	}
 
             }
         }
