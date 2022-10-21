@@ -35,9 +35,9 @@ pipeline {
         milestone(1)
         withCredentials ([usernamePassword(credentialsId: 'kubemaster', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
             script {
-                sh "scp -r -o StrictHostKeyChecking=no train-schedule-kube.yml $USERNAME@${env.productionserver}:/home/cloud_user"
+                sh "scp -r -o StrictHostKeyChecking=no train-schedule-kube.yml $USERNAME@${env.kubemasterip}:/home/cloud_user"
                 try {
-			sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@${env.productionserver} kubectl apply -f /home/cloud_user/train-schedule-kube.yml"
+			sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@${env.kubemasterip} kubectl apply -f /home/cloud_user/train-schedule-kube.yml"
                 } catch (err) {
                     echo: 'caught error: $err'
                 }
